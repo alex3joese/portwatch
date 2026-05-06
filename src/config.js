@@ -39,15 +39,28 @@ function loadConfig(configPath) {
 
   const merged = { ...DEFAULT_CONFIG, ...userConfig };
 
-  // Validate
-  if (!Array.isArray(merged.allowedPorts)) {
-    throw new Error('allowedPorts must be an array');
-  }
-  if (typeof merged.pollIntervalMs !== 'number' || merged.pollIntervalMs < 500) {
-    throw new Error('pollIntervalMs must be a number >= 500');
-  }
+  validateConfig(merged);
 
   return merged;
 }
 
-module.exports = { loadConfig, DEFAULT_CONFIG };
+/**
+ * Validate a merged config object, throwing descriptive errors on bad values.
+ * @param {object} config
+ */
+function validateConfig(config) {
+  if (!Array.isArray(config.allowedPorts)) {
+    throw new Error('allowedPorts must be an array');
+  }
+  if (config.allowedPorts.some((p) => typeof p !== 'number' || p < 1 || p > 65535)) {
+    throw new Error('allowedPorts must only contain valid port numbers (1–65535)');
+  }
+  if (typeof config.pollIntervalMs !== 'number' || config.pollIntervalMs < 500) {
+    throw new Error('pollIntervalMs must be a number >= 500');
+  }
+  if (config.logFile !== null && typeof config.logFile !== 'string') {
+    throw new Error('logFile must be a string path or null');
+  }
+}
+
+module.exports = { loadConfig, validateConfig, DEFAULT_CONFIG };
