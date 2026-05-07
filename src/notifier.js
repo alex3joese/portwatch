@@ -6,11 +6,6 @@ const { execSync } = require('child_process');
  * Falls back gracefully if no notifier is found.
  */
 function sendDesktopNotification(title, message) {
-  const platforms = {
-    linux: 'notify-send',
-    darwin: 'osascript',
-  };
-
   try {
     if (process.platform === 'darwin') {
       execSync(`osascript -e 'display notification "${message}" with title "${title}"'`);
@@ -26,10 +21,16 @@ function sendDesktopNotification(title, message) {
 
 /**
  * Writes a notification entry to a notification log file.
+ * @param {string} logPath - path to the log file
+ * @param {object} entry - alert payload to log
  */
 function logNotification(logPath, entry) {
   const line = JSON.stringify({ ts: new Date().toISOString(), ...entry }) + '\n';
-  fs.appendFileSync(logPath, line, 'utf8');
+  try {
+    fs.appendFileSync(logPath, line, 'utf8');
+  } catch (err) {
+    console.warn(`[notifier] Could not write to log file "${logPath}":`, err.message);
+  }
 }
 
 /**
