@@ -21,9 +21,19 @@ describe('validateAuditConfig', () => {
     expect(errors.some(e => e.includes('maxEntries'))).toBe(true);
   });
 
+  it('errors on non-integer maxEntries', () => {
+    const errors = validateAuditConfig({ ...DEFAULTS, maxEntries: 3.7 });
+    expect(errors.some(e => e.includes('maxEntries'))).toBe(true);
+  });
+
   it('errors on non-array events', () => {
     const errors = validateAuditConfig({ ...DEFAULTS, events: 'all' });
     expect(errors.some(e => e.includes('events'))).toBe(true);
+  });
+
+  it('can accumulate multiple errors at once', () => {
+    const errors = validateAuditConfig({ ...DEFAULTS, enabled: 'yes', maxEntries: -5 });
+    expect(errors.length).toBeGreaterThanOrEqual(2);
   });
 });
 
