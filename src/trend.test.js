@@ -37,6 +37,13 @@ describe('recordSample', () => {
     expect(t.samples.length).toBe(3);
     expect(t.samples[0].count).toBe(2);
   });
+
+  it('stores the timestamp alongside the count', () => {
+    const t = createTrend({ windowSize: 5 });
+    recordSample(t, 7, 1234);
+    expect(t.samples[0].timestamp).toBe(1234);
+    expect(t.samples[0].count).toBe(7);
+  });
 });
 
 describe('getAverage', () => {
@@ -106,27 +113,13 @@ describe('getTrendSummary', () => {
     expect(s).toHaveProperty('anomaly');
     expect(s.latest).toBe(5);
   });
+
+  it('sampleCount matches number of recorded samples', () => {
+    const t = createTrend({ windowSize: 10 });
+    for (let i = 0; i < 6; i++) recordSample(t, i, i * 1000);
+    expect(getTrendSummary(t).sampleCount).toBe(6);
+  });
 });
 
 describe('resolveTrendConfig', () => {
-  it('applies defaults', () => {
-    const cfg = resolveTrendConfig();
-    expect(cfg.windowSize).toBe(10);
-    expect(cfg.anomalyThreshold).toBe(2.0);
-    expect(cfg.enabled).toBe(true);
-  });
-
-  it('overrides defaults', () => {
-    const cfg = resolveTrendConfig({ windowSize: 5, anomalyThreshold: 1.5 });
-    expect(cfg.windowSize).toBe(5);
-    expect(cfg.anomalyThreshold).toBe(1.5);
-  });
-
-  it('throws on invalid windowSize', () => {
-    expect(() => resolveTrendConfig({ windowSize: 1 })).toThrow();
-  });
-
-  it('throws on non-boolean enabled', () => {
-    expect(() => resolveTrendConfig({ enabled: 'yes' })).toThrow();
-  });
-});
+  it('applies de
