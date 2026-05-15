@@ -38,6 +38,11 @@ describe('validateSchedulerConfig', () => {
     const errors = validateSchedulerConfig({ intervalMs: 3000, maxMissedTicks: 5, logTicks: true });
     expect(errors).toEqual([]);
   });
+
+  test('returns multiple errors when multiple fields are invalid', () => {
+    const errors = validateSchedulerConfig({ intervalMs: 'fast', maxMissedTicks: -1, logTicks: 'yes' });
+    expect(errors.length).toBeGreaterThanOrEqual(3);
+  });
 });
 
 describe('resolveSchedulerConfig', () => {
@@ -54,5 +59,12 @@ describe('resolveSchedulerConfig', () => {
 
   test('throws on invalid config', () => {
     expect(() => resolveSchedulerConfig({ intervalMs: 100 })).toThrow('Invalid scheduler config');
+  });
+
+  test('resolved config contains all expected keys', () => {
+    const config = resolveSchedulerConfig();
+    expect(config).toHaveProperty('intervalMs');
+    expect(config).toHaveProperty('maxMissedTicks');
+    expect(config).toHaveProperty('logTicks');
   });
 });
