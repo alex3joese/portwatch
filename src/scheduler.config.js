@@ -19,8 +19,8 @@ function validateSchedulerConfig(config) {
   }
 
   if (config.maxMissedTicks !== undefined) {
-    if (typeof config.maxMissedTicks !== 'number' || config.maxMissedTicks < 1) {
-      errors.push('maxMissedTicks must be a positive number');
+    if (typeof config.maxMissedTicks !== 'number' || !Number.isInteger(config.maxMissedTicks) || config.maxMissedTicks < 1) {
+      errors.push('maxMissedTicks must be a positive integer');
     }
   }
 
