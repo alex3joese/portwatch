@@ -20,6 +20,14 @@ describe('validateRule', () => {
   test('throws on invalid port entry', () => {
     expect(() => validateRule({ ports: ['not-a-port'] }, 'test')).toThrow('invalid port entry');
   });
+
+  test('throws if addresses is not an array', () => {
+    expect(() => validateRule({ addresses: '127.0.0.1' }, 'test')).toThrow('addresses must be an array');
+  });
+
+  test('throws if processes is not an array', () => {
+    expect(() => validateRule({ processes: 'node' }, 'test')).toThrow('processes must be an array');
+  });
 });
 
 describe('validateFilterConfig', () => {
@@ -40,6 +48,10 @@ describe('validateFilterConfig', () => {
 
   test('throws if whitelist is not an array', () => {
     expect(() => validateFilterConfig({ whitelist: 'bad' })).toThrow('whitelist must be an array');
+  });
+
+  test('throws if blacklist is not an array', () => {
+    expect(() => validateFilterConfig({ blacklist: 'bad' })).toThrow('blacklist must be an array');
   });
 });
 
